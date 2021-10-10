@@ -1,11 +1,82 @@
 ---
-title: "PS4"
+title: "Assignment 04"
 author: "Ankushi Mitra"
 date: "10/10/2021"
 output: html_document
+urlcolor: blue
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, pagenumbering="arabic", include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, results = "hide")
 ```
+
+Dataset sourced from [Afrobarometer (Round 7)](https://afrobarometer.org/data/merged-round-7-data-34-countries-2019).
+
+Codebook sourced from [Afrobarometer](https://afrobarometer.org/sites/default/files/r7_merged.codebook_final_14dec20.pdf).
+
+## Visualization 1
+
+```{r}
+
+library(tidyverse)
+library(ggplot2)
+library(haven)
+library(readxl)
+library(scales)
+
+AB <- read_sav("/Users/ankushi/Desktop/GOVT-772_Data_Science/assignment04/AB_R7_Merged")
+GDP <- read_excel("/Users/ankushi/Desktop/GOVT-772_Data_Science/assignment04/gdp_AB.xlsx")
+country_labels <- read_excel("/Users/ankushi/Desktop/GOVT-772_Data_Science/assignment04/labelfile_AB.xlsx")
+
+# descriptive data on Q4A: how would you describe the present economic situation of the country?
+AB %>% count(Q4A) #dropping missing (-1), "refused" (8), and "dont know" (9) values 
+group_by(AB, Q4A) 
+AB <- AB %>%
+  filter(Q4A<8, Q4A>-1) 
+summarize(AB, mean(Q4A), sd(Q4A), fivenum(Q4A))
+
+#mean value of economic evaluation by country 
+df2 <- AB %>% group_by(COUNTRY) %>%
+  summarise(mean(Q4A)) %>%
+  print(n=34)
+
+#combining separate label file from Afrobarometer and GDP data from World Bank microdata catalog 
+df3 <- bind_cols(country_labels$country_lbl, df2$COUNTRY, df2$`mean(Q4A)`, GDP$`GDP (Current US$, 2020)`) 
+df3 <- rename(df3, country_lbl = ...1, country = ...2, avg = ...3, gdp = ...4)
+
+theme_set(theme_fivethirtyeight())
+econ_gdp <- ggplot(df3, aes(x=gdp, y=avg)) + 
+  geom_point(alpha = 0.01) + 
+  geom_text(aes(label=country_lbl), size=2, check_overlap = TRUE) +
+  labs(
+    title = "Opinions on Country's Present Economic Situation (Very Bad to Very Good)",
+    subtitle = "By GDP (2020, US$)",
+    caption = "Sources: Afrobarometer R7; World Bank",
+    x = "GDP (2020, US$)",
+    y = "Opinion on Country's Present Economic Situation (Very Bad to Very Good)"
+  ) + 
+  theme(
+    plot.title = element_text(color = "grey35", size = 10, face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(size = 8, hjust = 0.5),
+    plot.caption = element_text(face = "italic", size = 6, hjust = 1), 
+  ) +
+  theme(axis.text.x = element_text(size=7), 
+        axis.text.y = element_text(size=7),
+        axis.title.x = element_text(size=8),
+        axis.title.y = element_text(size=8)) +
+  theme(
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.background = element_blank(),
+    plot.background = element_blank()) +
+  scale_x_log10(labels = label_number(suffix = "B", scale = 1e-9))
+econ_gdp
+
+```
+
+##Visualization 2
+
+
+
+
 
