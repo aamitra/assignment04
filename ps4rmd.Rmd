@@ -49,7 +49,7 @@ econ_gdp <- ggplot(df3, aes(x=gdp, y=avg)) +
   geom_point(alpha = 0.01) + 
   geom_text(aes(label=country_lbl), size=2, check_overlap = TRUE) +
   labs(
-    title = "Opinions on Country's Present Economic Situation (Very Bad to Very Good)",
+    title = "Evaluation of Country's Present Economic Situation (Very Bad to Very Good)",
     subtitle = "By GDP (2020, US$)",
     caption = "Sources: Afrobarometer R7; World Bank",
     x = "GDP (2020, US$)",
@@ -74,9 +74,58 @@ econ_gdp
 
 ```
 
+
 ##Visualization 2
 
+```{r}
 
 
+AB <- read_sav("/Users/ankushi/Desktop/GOVT-772_Data_Science/assignment04/AB_R7_Merged")
+AB <- as_tibble(AB)
+
+# descriptive data on Q4A: how would you describe the present economic situation of the country?
+AB %>% count(Q4A) #dropping missing (-1), "refused" (8), and "dont know" (9) values 
+group_by(AB, Q4A) 
+AB <- AB %>%
+  filter(Q4A<8, Q4A>-1) 
+
+AB %>% count(URBRUR) #dropping obvs. coded as "semi urban" and "peri urban" since they are a small proportion of the sample
+AB <- AB %>%
+  filter(URBRUR<3) 
+
+
+theme_set(theme_fivethirtyeight()) 
+ggplot() +
+  geom_bar(data = AB, (aes(x = Q4A, group = URBRUR, fill = factor(URBRUR))), position = "dodge") +
+  theme(
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.background = element_blank(), 
+    plot.background = element_blank()) +
+  labs(
+    title = "Opinions on Country's Present Economic Condition",
+    subtitle = "By Location",
+    caption = "Source: Afrobarometer R7",
+    x = "Opinions on Economic Condition",
+    y = "Number of Respondents") +
+  theme(
+    plot.title = element_text(color = "grey35", size = 10, face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(size = 8, hjust = 0.5),
+    plot.caption = element_text(face = "italic", size = 5, hjust = 1)) +
+  theme(axis.text.x = element_text(size=5), 
+        axis.text.y = element_text(size=5), 
+        axis.title.x = element_text(size=8),
+        axis.title.y = element_text(size=8)) +
+  scale_fill_discrete(name = "Location", labels = c("Urban", "Rural")) +
+  theme(legend.title = element_blank(),
+        legend.background = element_blank(),
+        legend.key = element_blank(),
+        legend.key.size = unit(0.3, "cm"),
+        legend.text = element_text(size = 8)) +
+  scale_x_continuous(breaks=c(1,2,3,4,5), 
+                     labels=expression("Very Bad", "Fairly Bad",
+                                       "Neither", "Fairly Good", "Very Good"))
+
+```
 
 
