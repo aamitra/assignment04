@@ -81,7 +81,6 @@ econ_gdp
 
 
 AB <- read_sav("/Users/ankushi/Desktop/GOVT-772_Data_Science/assignment04/AB_R7_Merged")
-AB <- as_tibble(AB)
 
 # descriptive data on Q4A: how would you describe the present economic situation of the country?
 AB %>% count(Q4A) #dropping missing (-1), "refused" (8), and "dont know" (9) values 
@@ -127,5 +126,46 @@ ggplot() +
                                        "Neither", "Fairly Good", "Very Good"))
 
 ```
+
+##Visualization 3
+
+```{r}
+
+AB <- read_sav("/Users/ankushi/Desktop/GOVT-772_Data_Science/assignment04/AB_R7_Merged")
+
+AB %>% count(Q4A) #dropping missing (-1), "refused" (8), and "dont know" (9) values 
+AB <- AB %>%
+  filter(Q4A<8, Q4A>-1) 
+
+AB %>% count(Q29) #dropping missing (-1), "refused" (8), "dont know" (9), and "neither" (5) values 
+AB <- AB %>%
+  filter(Q29<5, Q29 > -1) 
+
+theme_set(theme_fivethirtyeight()) 
+AB %>% ggplot() +
+  geom_jitter(aes(x=Q4A, y=Q29), size=0.3, color="#91b8bd") +
+  theme(
+  panel.grid.major = element_blank(),
+  panel.grid.minor = element_blank(),
+  panel.background = element_blank(), 
+  plot.background = element_blank()) +
+  labs(
+    title = "Is It More Important To Have A Government That Can Get Things Done, 
+    Even If We Have No Influence Over What It Does?",
+    subtitle = "By Assessment of Country's Present Economic Condition",
+    caption = "Source: Afrobarometer R7",
+    x = "Assessment of Economic Conditions (Very Bad to Very Good)",
+    y = "Support for Democratic Accountability (Less Supportive to More Supportive)") +
+  theme(
+    plot.title = element_text(color = "grey35", size = 8.5, face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(size = 7.5, hjust = 0.5),
+    plot.caption = element_text(face = "italic", size = 5, hjust = 1)) +
+  theme(axis.text.x = element_text(size=7), 
+        axis.text.y = element_text(size=7), 
+        axis.title.x = element_text(size=7),
+        axis.title.y = element_text(size=7)) 
+
+```
+
 
 
