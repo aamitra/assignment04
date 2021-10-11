@@ -24,6 +24,7 @@ library(haven)
 library(readxl)
 library(scales)
 
+
 AB <- read_sav("/Users/ankushi/Desktop/GOVT-772_Data_Science/assignment04/AB_R7_Merged")
 GDP <- read_excel("/Users/ankushi/Desktop/GOVT-772_Data_Science/assignment04/gdp_AB.xlsx")
 country_labels <- read_excel("/Users/ankushi/Desktop/GOVT-772_Data_Science/assignment04/labelfile_AB.xlsx")
@@ -75,7 +76,74 @@ econ_gdp
 ```
 
 
-##Visualization 2
+##Visualization 2 (Comparison)
+
+```{r}
+
+theme_set(theme_fivethirtyeight())
+econ_gdp_smoothed <- ggplot(df3, aes(x=gdp, y=avg)) + 
+  geom_point(alpha = 0.01) + 
+  geom_text(aes(label=country_lbl), size=2, check_overlap = TRUE) +
+  geom_smooth(inherit.aes = TRUE) +
+  labs(
+    title = "Opinions on Country's Present Economic Situation (Very Bad to Very Good)",
+    subtitle = "By GDP (2020, US$)",
+    caption = "Sources: Afrobarometer R7; World Bank",
+    x = "GDP (2020, US$)",
+    y = "Opinion on Country's Present Economic Situation (Very Bad to Very Good)"
+  ) + 
+  theme(
+    plot.title = element_text(color = "grey35", size = 9, face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(size = 8, hjust = 0.5),
+    plot.caption = element_text(face = "italic", size = 6, hjust = 1), 
+  ) +
+  theme(axis.text.x = element_text(size=7), 
+        axis.text.y = element_text(size=7),
+        axis.title.x = element_text(size=8),
+        axis.title.y = element_text(size=8)) +
+  theme(
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.background = element_blank(),
+    plot.background = element_blank()) +
+  scale_x_log10(labels = label_number(suffix = "B", scale = 1e-9))
+econ_gdp_smoothed
+
+
+GDPPC <- read_excel("/Users/ankushi/Desktop/GOVT-772_Data_Science/assignment04/gdpPC_AB.xlsx")
+df3 <- bind_cols(df3, GDPPC)
+
+theme_set(theme_fivethirtyeight())
+econ_gdppc <- ggplot(df3, aes(x=`GDP Per Capita`, y=avg)) + 
+  geom_point(alpha = 0.01) + 
+  geom_text(aes(label=country_lbl), size=2, check_overlap = TRUE) +
+  geom_smooth(inherit.aes = TRUE) +
+  labs(
+    title = "Opinions on Country's Present Economic Situation (Very Bad to Very Good)",
+    subtitle = "By GDP Per Capita (2020, US$)",
+    caption = "Sources: Afrobarometer R7; World Bank",
+    x = "GDP Per Capita (2020, US$)",
+    y = "Opinion on Country's Present Economic Situation (Very Bad to Very Good)"
+  ) + 
+  theme(
+    plot.title = element_text(color = "grey35", size = 9, face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(size = 8, hjust = 0.5),
+    plot.caption = element_text(face = "italic", size = 6, hjust = 1)) +
+  theme(axis.text.x = element_text(size=7), 
+        axis.text.y = element_text(size=7),
+        axis.title.x = element_text(size=8),
+        axis.title.y = element_text(size=8)) +
+  theme(
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.background = element_blank(),
+    plot.background = element_blank()) 
+econ_gdppc
+  
+
+```
+
+##Visualization 3
 
 ```{r}
 
@@ -127,7 +195,7 @@ ggplot() +
 
 ```
 
-##Visualization 3
+##Visualization 4
 
 ```{r}
 
@@ -166,6 +234,5 @@ AB %>% ggplot() +
         axis.title.y = element_text(size=7)) 
 
 ```
-
 
 
